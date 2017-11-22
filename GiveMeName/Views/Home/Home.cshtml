@@ -1,7 +1,19 @@
-﻿
+﻿@model GiveMeName.Models.UserListVM
+
 @{
     ViewBag.Title = "Home";
 }
 
 <h2>Home</h2>
+@using (Html.BeginForm(FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.TextBoxFor(model => Model.UrlAddress, new { placeholder = "URL address"})
+    <input type="submit" value="Give me name"/>
+}
 
+
+@foreach(var user in Model.Users)
+{
+
+}
