@@ -4,16 +4,38 @@
     ViewBag.Title = "Home";
 }
 
-<h2>Home</h2>
+<h2>Youtube Name And Comments</h2>
+<br/>
 @using (Html.BeginForm(FormMethod.Post))
 {
     @Html.AntiForgeryToken()
-    @Html.TextBoxFor(model => Model.UrlAddress, new { placeholder = "URL address"})
-    <input type="submit" value="Give me name"/>
+    @Html.TextBoxFor(model => Model.UrlAddress, new { placeholder = "URL address" })
+    <input type="submit" value="Give me name" />
 }
 
-
-@foreach(var user in Model.Users)
-{
-
-}
+<br />
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th class="col-md-4">
+                Nazwa Użytkownika
+            </th>
+            <th class="col-md-8">
+                Komentarz
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td class="col-md-4">
+                    <span>@user.Name</span>
+                </td>
+                <td class="col-md-8">
+                    <span>@user.Comment</span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

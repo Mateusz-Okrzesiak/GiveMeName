@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using GiveMeName.Models;
 using GiveMeName.Helpers;
 
+
 namespace GiveMeName.Controllers
 {
     public class HomeController : Controller
@@ -26,7 +27,7 @@ namespace GiveMeName.Controllers
                 model.Users = WebContentHelper.GetUserInfo(webContent);
             }
 
-            return View();
+            return View(model);
         }
     }
 }

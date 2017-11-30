@@ -6,52 +6,51 @@ using GiveMeName.Models;
 using System.Net;
 using System.Text;
 using HtmlAgilityPack;
+using System.Net.Mail;
+using System.IO;
+using Google.Apis.YouTube.v3;
+using Newtonsoft.Json.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using AutoMapper;
 
 namespace GiveMeName.Helpers
 {
     public static class WebContentHelper
     {
+        private const string key = "PasteYourApiKey!!!!";
+        private const string YouTubeApiLink = @"https://www.googleapis.com/youtube/v3/commentThreads?key=";
+        private const string YouTubeApiLink2 = "&textFormat=plainText&part=snippet&videoId=";
 
-       public static string GetContent(string urlAdress)
-        {
+        public static string GetContent(string videoUrl)
+        {             
+            int startIndex = videoUrl.IndexOf("=");
+            string videoId = videoUrl.Substring(++startIndex);
+
+            string FullUrl = YouTubeApiLink + key + YouTubeApiLink2 + videoId;
+
             WebClient client = new WebClient();
-            client.Encoding = System.Text.Encoding.UTF8;
-            string webContent =  client.DownloadString(urlAdress);
+            var json = client.DownloadString(FullUrl); 
 
-            StringBuilder sb = new StringBuilder();
-            HtmlWeb web = new HtmlWeb();
-            HtmlDocument doc = web.Load(urlAdress);
-            foreach (HtmlTextNode node in doc.DocumentNode.SelectNodes("//a[@id='author-text']/a"))
-            {
-                sb.AppendLine(node.Text);
-            }
-            string final = sb.ToString();
-
-            HtmlNodeCollection tags = doc.DocumentNode.SelectNodes("//tag1//tag2");
-
-
-            //string html;
-            //// obtain some arbitrary html....
-            //using (var client1 = new WebClient())
-            //{
-            //    html = client1.DownloadString("http://stackoverflow.com/questions/2038104");
-            //}
-            //// use the html agility pack: http://www.codeplex.com/htmlagilitypack
-            //HtmlDocument doc = new HtmlDocument();
-            //doc.LoadHtml(html);
-            //StringBuilder sb = new StringBuilder();
-            //foreach (HtmlTextNode node in doc.DocumentNode.SelectNodes("//text()"))
-            //{
-            //    sb.AppendLine(node.Text);
-            //}
-            //string final = sb.ToString();
-            return webContent;
+            return json;
         }
-       
-        public static List<User> GetUserInfo(string webContent)
+
+        public static List<User> GetUserInfo(string json)
         {
             List<User> users = new List<User>();
 
+            JObject jsonoObj = JObject.Parse(json);
+            var data = jsonoObj["items"];
+
+            int i = 0;
+            foreach (JObject item in data)
+            {
+                User u = new User();
+                u.Name = (string)data[i]["snippet"]["topLevelComment"]["snippet"]["authorDisplayName"];
+                u.Comment = (string)data[i]["snippet"]["topLevelComment"]["snippet"]["textDisplay"];
+                users.Add(u);
+                i++;
+            }
             return users;
         }
     }
